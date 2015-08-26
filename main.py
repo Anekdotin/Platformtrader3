@@ -30,6 +30,13 @@ class Window(QtGui.QDialog):
 
 
 
+        self.myQMenuBar = QtGui.QMenuBar(self)
+        exitMenu = self.myQMenuBar.addMenu('File')
+        exitAction = QtGui.QAction('Exit', self)
+        exitAction.triggered.connect(QtGui.qApp.quit)
+        exitMenu.addAction(exitAction)
+
+
         self.canvas = FigureCanvas(f)
         self.canvas.show()
 
@@ -41,7 +48,7 @@ class Window(QtGui.QDialog):
         self.button.clicked.connect(self.animate)
 
 
-        self.setGeometry(300, 300, 300, 200)
+        self.setGeometry(300, 300, 800, 600)
         self.setWindowTitle('Menubar')
         self.show()
 
