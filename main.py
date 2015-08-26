@@ -1,9 +1,11 @@
-__author__ = 'ed'
+#! /usr/bin/python
+
 import sys
 from PyQt4 import QtGui, QtCore
 
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
+import matplotlib.animation as animation
 from matplotlib import style
 #style.use('dark_background')
 from matplotlib import pyplot as plt
@@ -15,7 +17,6 @@ import urllib
 
 f = Figure()
 a = f.add_subplot(111)
-
 
 
 
@@ -66,6 +67,7 @@ class Window(QtGui.QDialog):
 
 
 
+
 #_________________________________________________________________________
 #
 
@@ -73,18 +75,12 @@ class Window(QtGui.QDialog):
 
         self.canvas = FigureCanvas(f)
         self.canvas.show()
-
-
-
-
-
-        self.button = QtGui.QPushButton('Plot')
-        self.button.clicked.connect(self.animate)
-
-
-
-
         self.show()
+
+
+
+
+
 
 
 
@@ -93,44 +89,19 @@ class Window(QtGui.QDialog):
         grid = QtGui.QGridLayout()
 
         grid.addWidget(self.canvas, 0, 0, 2, 4)
-        grid.addWidget(self.button, 2, 1, 1, 1)
+
+
 
 
         self.setLayout(grid)
 #_________________________________________________________________________
 
 
-    def animate(i):
-        dataLink = 'https://btc-e.com/api/3/trades/btc_usd?limit=2000'
-        data = urllib.request.urlopen(dataLink)
-        data = data.readall().decode("utf-8")
-        data = json.loads(data)
 
 
-        data = data["btc_usd"]
-        data = pd.DataFrame(data)
-
-        buys = data[(data['type']=="bid")]
-        buys["datestamp"] = np.array(buys["timestamp"]).astype("datetime64[s]")
-        buyDates = (buys["datestamp"]).tolist()
 
 
-        sells = data[(data['type']=="ask")]
-        sells["datestamp"] = np.array(sells["timestamp"]).astype("datetime64[s]")
-        sellDates = (sells["datestamp"]).tolist()
 
-        a.clear()
-
-        a.plot_date(buyDates, buys["price"], '#00A3E0', label="buys")
-        a.plot_date(sellDates, sells["price"], '#183a54', label="sells")
-
-        a.legend(bbox_to_anchor=(0, 1.02, 1, .102), loc=3,
-                 ncol=2,borderaxespad=0)
-
-        title = "BTC-e BTCUSD PRices/nLast Price: "+str(data["price"][1999])
-        a.set_title(title)
-
-    #ani = animation.FuncAnimation(f, animate, interval=1000)
 
 
 #_________________________________________________________________________
@@ -146,11 +117,46 @@ class Window(QtGui.QDialog):
         pass
     def newFile(self):
         pass
-#______________________
+
+
+def animate(i):
+    dataLink = 'https://btc-e.com/api/3/trades/btc_usd?limit=2000'
+    data = urllib.request.urlopen(dataLink)
+    data = data.readall().decode("utf-8")
+    data = json.loads(data)
+
+
+    data = data["btc_usd"]
+    data = pd.DataFrame(data)
+
+    buys = data[(data['type']=="bid")]
+    buys["datestamp"] = np.array(buys["timestamp"]).astype("datetime64[s]")
+    buyDates = (buys["datestamp"]).tolist()
+
+
+    sells = data[(data['type']=="ask")]
+    sells["datestamp"] = np.array(sells["timestamp"]).astype("datetime64[s]")
+    sellDates = (sells["datestamp"]).tolist()
+
+    a.clear()
+
+    a.plot_date(buyDates, buys["price"], '#00A3E0', label="buys")
+    a.plot_date(sellDates, sells["price"], '#183a54', label="sells")
+
+    a.legend(bbox_to_anchor=(0, 1.02, 1, .102), loc=3,
+             ncol=2,borderaxespad=0)
+
+    title = "BTC-e BTCUSD PRices/nLast Price: "+str(data["price"][1999])
+    a.set_title(title)
+    timer = QtCore.QTimer()
+    timer.timeout.connect(animate)
+    timer.start(1000)
+
+#_____________________
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
 
     main = Window()
     main.show()
-
+    ani = animation.FuncAnimation(f, animate, interval=1000)
     sys.exit(app.exec_())
