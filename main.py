@@ -10,6 +10,8 @@ from matplotlib import style
 #style.use('dark_background')
 from matplotlib import pyplot as plt
 
+from matplotlib.finance import candlestick, candlestick2
+
 import json
 import pandas as pd
 import numpy as np
@@ -23,6 +25,9 @@ exchange = "btce"
 DatCounter = 9000
 programName = "btce"
 
+datapace = "1 day"
+resampleSize = "15 minutes"
+candleWidth = 0.008
 
 class Window(QtGui.QDialog):
     def __init__(self, parent=None):
@@ -108,28 +113,28 @@ class Window(QtGui.QDialog):
         tick1.setStatusTip('seven day')
         tick1.triggered.connect(self.bitstamp)
 
-        onem = QtGui.QAction('1 minute', 0.0005,  self)
+        onem = QtGui.QAction('1 minute',  self)
         onem.setStatusTip('seven day')
         onem.triggered.connect(self.bitstamp)
 
 
-        fivem = QtGui.QAction('5 minute', 0.003, self)
+        fivem = QtGui.QAction('5 minute', self)
         fivem.setStatusTip('seven day')
         fivem.triggered.connect(self.bitstamp)
 
-        fifteenm = QtGui.QAction('15 minute', 0.008, self)
+        fifteenm = QtGui.QAction('15 minute', self)
         fifteenm.setStatusTip('seven day')
         fifteenm.triggered.connect(self.bitstamp)
 
-        thirtymin = QtGui.QAction('30 mins', 0.016, self)
+        thirtymin = QtGui.QAction('30 mins', self)
         thirtymin.setStatusTip('seven day')
         thirtymin.triggered.connect(self.bitstamp)
 
-        oneh = QtGui.QAction('1 hour', 0.032, self)
+        oneh = QtGui.QAction('1 hour', self)
         oneh.setStatusTip('seven day')
         oneh.triggered.connect(self.bitstamp)
 
-        threeh = QtGui.QAction('3 hour', 0.096, self)
+        threeh = QtGui.QAction('3 hour', self)
         threeh.setStatusTip('seven day')
         threeh.triggered.connect(self.bitstamp)
 
@@ -241,6 +246,38 @@ class Window(QtGui.QDialog):
 
 
 
+    def changeTimeFrame(self, tf, popupmsg):
+        global DatCounter
+        global datapace
+
+        if tf == "7 day" and resampleSize == "1 minute":
+            popupmsg("Way to much data!")
+
+        else:
+            datapace = tf
+            DatCounter = 9000
+
+    def changeSampleSize(self, size, width, popupmsg):
+        global resampleSize
+        global DatCounter
+        global candleWidth
+
+
+        if datapace == "7 day" and resampleSize == "1 minute":
+            popupmsg("Way to much data!")
+
+        elif datapace == "tick":
+            popupmsg("Your currently viewing ticking data")
+
+        else:
+            resampleSize = size
+            DatCounter = 9000
+            candleWidth = width
+
+
+
+
+
 
 
 
@@ -283,5 +320,5 @@ if __name__ == '__main__':
 
     main = Window()
     main.show()
-    #ani = animation.FuncAnimation(f, animate, interval=1000)
+    ani = animation.FuncAnimation(f, animate, interval=1000)
     sys.exit(app.exec_())
