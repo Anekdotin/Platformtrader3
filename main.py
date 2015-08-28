@@ -29,6 +29,16 @@ datapace = "1 day"
 resampleSize = "15 minutes"
 candleWidth = 0.008
 
+topIndicator = "noner"
+middleIndicator = "noner"
+bottomIndicator = "noner"
+
+EMAs = []
+SMAs = []
+
+
+
+
 class Window(QtGui.QDialog):
     def __init__(self, parent=None):
         super(Window, self).__init__(parent)
@@ -51,6 +61,10 @@ class Window(QtGui.QDialog):
         dataTF = self.myQMenuBar.addMenu('Data Time')
 
         OHLCI = self.myQMenuBar.addMenu('OHLC Interval')
+
+        topIndicator = self.myQMenuBar.addMenu('Top Indicator')
+
+        middleIndicator = self.myQMenuBar.addMenu('Middle Indicator')
 #______________
 
 
@@ -58,21 +72,6 @@ class Window(QtGui.QDialog):
         exitAction.setShortcut('Ctrl+Q')
         exitAction.setStatusTip('Quit Program')
         exitAction.triggered.connect(QtGui.qApp.quit)
-
-        newAction = QtGui.QAction('New', self)
-        newAction.setShortcut('Ctrl+N')
-        newAction.setStatusTip('Create new file')
-        newAction.triggered.connect(self.newFile)
-
-        saveAction = QtGui.QAction('Save', self)
-        saveAction.setShortcut('Ctrl+S')
-        saveAction.setStatusTip('Save current file')
-        saveAction.triggered.connect(self.saveFile)
-
-        openAction = QtGui.QAction('Open', self)
-        openAction.setShortcut('Ctrl+O')
-        openAction.setStatusTip('Open a file')
-        openAction.triggered.connect(self.openFile)
 
         popupmsgAction = QtGui.QAction('Open', self)
         popupmsgAction.setStatusTip('Popup')
@@ -138,15 +137,41 @@ class Window(QtGui.QDialog):
         threeh.setStatusTip('seven day')
         threeh.triggered.connect(self.bitstamp)
 
+#------------Top indicator
 
+        noner = QtGui.QAction('None', self)
+        noner.setStatusTip('None')
+        noner.triggered.connect(self.btce)
 
+        sma = QtGui.QAction('RSI', self)
+        sma.setStatusTip('RSI')
+        sma.triggered.connect(self.addTopIndicator)
 
-        FileMenu.addAction(newAction)
-        FileMenu.addAction(saveAction)
-        FileMenu.addAction(openAction)
+        ema = QtGui.QAction('MACD', self)
+        ema.setStatusTip('MACD')
+        ema.triggered.connect(self.bitstamp)
+
+#------------Middle Indicator
+
+        noner = QtGui.QAction('None', self)
+        noner.setStatusTip('None')
+        noner.triggered.connect(self.btce)
+
+        rsi = QtGui.QAction('RSI', self)
+        rsi.setStatusTip('RSI')
+        rsi.triggered.connect(self.bitfinex)
+
+        macd = QtGui.QAction('MACD', self)
+        macd.setStatusTip('MACD')
+        macd.triggered.connect(self.bitstamp)
+
+#---------------------------------------------------------------
+
         FileMenu.addAction(exitAction)
 
+
         AboutMenu.addAction(popupmsgAction)
+
 
         exchangeChoice.addAction(exchange1)
         exchangeChoice.addAction(exchange2)
@@ -166,7 +191,14 @@ class Window(QtGui.QDialog):
         OHLCI.addAction(threeh)
 
 
+        topIndicator.addAction(noner)
+        topIndicator.addAction(rsi)
+        topIndicator.addAction(macd)
 
+
+        middleIndicator.addAction(noner)
+        middleIndicator.addAction(ema)
+        middleIndicator.addAction(sma)
 
 
 
@@ -203,18 +235,13 @@ class Window(QtGui.QDialog):
 
 
 #_________________________________________________________________________
-    #Functions--------------------------------------------------------------
+#Functions--------------------------------------------------------------
 
 
     def close_application(self):
         print("whooaaaa so custom!!!")
         sys.exit()
-    def openFile(self):
-        pass
-    def saveFile(self):
-        pass
-    def newFile(self):
-        pass
+
 
 
     def popupmsg(self):
@@ -226,6 +253,9 @@ class Window(QtGui.QDialog):
             sys.exit()
         else:
             pass
+
+
+        #Info------------
 
     def changeExchange(self, toWhat, pn):
         global exchange
@@ -277,6 +307,22 @@ class Window(QtGui.QDialog):
 
 
 
+#-------Indicators
+    def addTopIndicator(self, what, popupmsg):
+        global topIndicator
+        global DatCounter
+
+        rsiQ = QtGui.QInputDialog.getText(self, 'RSI',
+        'Choose how many periods: ')
+        if rsiQ:
+            self.le.setText(str())
+
+        else:
+            pass
+
+
+
+
 
 
 
@@ -314,10 +360,11 @@ def animate(i):
     timer.timeout.connect(animate)
     timer.start(1000)
 
-#_____________________
+
+
+#RUN IT_____________________
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
-
     main = Window()
     main.show()
     ani = animation.FuncAnimation(f, animate, interval=1000)
