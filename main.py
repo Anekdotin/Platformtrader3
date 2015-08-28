@@ -143,12 +143,12 @@ class Window(QtGui.QDialog):
         noner.setStatusTip('None')
         noner.triggered.connect(self.btce)
 
-        sma = QtGui.QAction('RSI', self)
-        sma.setStatusTip('RSI')
+        sma = QtGui.QAction('EMA', self)
+        sma.setStatusTip('EMA')
         sma.triggered.connect(self.addTopIndicator)
 
-        ema = QtGui.QAction('MACD', self)
-        ema.setStatusTip('MACD')
+        ema = QtGui.QAction('SMA', self)
+        ema.setStatusTip('SMA')
         ema.triggered.connect(self.bitstamp)
 
 #------------Middle Indicator
@@ -308,19 +308,16 @@ class Window(QtGui.QDialog):
 
 
 #-------Indicators
-    def addTopIndicator(self, what, popupmsg):
+    def addTopIndicator(self):
         global topIndicator
         global DatCounter
 
-        rsiQ = QtGui.QInputDialog.getText(self, 'RSI',
-        'Choose how many periods: ')
-        if rsiQ:
-            self.le.setText(str())
 
-        else:
-            pass
+        text, ok = QtGui.QInputDialog.getText(self, 'Input Dialog',
+            'Enter your name:')
 
-
+        if ok:
+            self.le.setText(str(text))
 
 
 
